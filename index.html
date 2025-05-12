@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Digestão da Lactose – Com e Sem Lactase</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f8ff;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100vh;
+    }
+
+    h1 {
+      color: #0077aa;
+      margin-top: 20px;
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      gap: 50px;
+      margin-top: 30px;
+      flex-wrap: wrap;
+    }
+
+    .cenario {
+      background: #fff;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+      padding: 15px;
+      width: 350px;
+      min-height: 500px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      position: relative;
+      background-image: url('https://www.transparenttextures.com/patterns/diagonal-stripes.png');
+      background-size: cover;
+      background-repeat: no-repeat;
+    }
+
+    .cenario h2 {
+      text-align: center;
+      color: #444;
+    }
+
+    .etapa {
+      border: 2px dashed #aaa;
+      border-radius: 8px;
+      padding: 10px;
+      margin: 10px 0;
+      min-height: 60px;
+      background: #f9f9f9;
+      transition: background 0.3s;
+    }
+
+    .etapa.filled {
+      background: #d0f0ff;
+      border-color: #0077aa;
+    }
+
+    .texto {
+      font-size: 14px;
+      color: #333;
+    }
+
+    #leite {
+      width: 70px;
+      cursor: grab;
+      margin: 20px;
+    }
+
+    .drop-target {
+      transition: background 0.3s ease;
+    }
+
+    /* Cenário de fundo */
+    .cenario {
+      background-image: url('https://upload.wikimedia.org/wikipedia/commons/9/9f/Human_digestive_system_diagram.svg');
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
+      height: 400px;
+    }
+
+  </style>
+</head>
+<body>
+
+  <h1>Arraste o Leite para Iniciar a Digestão</h1>
+  <img id="leite" src="https://cdn-icons-png.flaticon.com/512/685/685352.png" draggable="true" ondragstart="startDrag(event)" alt="Copo de leite">
+
+  <div class="container">
+    <!-- CENÁRIO COM LACTASE -->
+    <div class="cenario" ondragover="allowDrop(event)" ondrop="drop(event, 'com')">
+      <h2>Com Lactase</h2>
+      <div id="com_boca" class="etapa drop-target">Boca</div>
+      <div id="com_estomago" class="etapa drop-target">Estômago</div>
+      <div id="com_intestino" class="etapa drop-target">Intestino Delgado</div>
+      <div id="com_colon" class="etapa drop-target">Cólon</div>
+    </div>
+
+    <!-- CENÁRIO SEM LACTASE -->
+    <div class="cenario" ondragover="allowDrop(event)" ondrop="drop(event, 'sem')">
+      <h2>Sem Lactase</h2>
+      <div id="sem_boca" class="etapa drop-target">Boca</div>
+      <div id="sem_estomago" class="etapa drop-target">Estômago</div>
+      <div id="sem_intestino" class="etapa drop-target">Intestino Delgado</div>
+      <div id="sem_colon" class="etapa drop-target">Cólon</div>
+    </div>
+  </div>
+
+  <script>
+    let etapaAtual = {
+      com: 0,
+      sem: 0
+    };
+
+    const textos = {
+      com: [
+        "A lactose entra pela boca com os alimentos.",
+        "No estômago, ela permanece intacta, aguardando o intestino.",
+        "No intestino delgado, a lactase quebra a lactose em glicose + galactose.",
+        "No cólon, nada chega — a lactose já foi digerida corretamente."
+      ],
+      sem: [
+        "A lactose entra pela boca com os alimentos.",
+        "No estômago, ela permanece intacta.",
+        "No intestino delgado, não há lactase. A lactose não é digerida.",
+        "A lactose chega ao cólon, onde é fermentada por bactérias, gerando gases, ácido, e diarreia osmótica."
+      ]
+    };
+
+    function allowDrop(ev) {
+      ev.preventDefault();
+    }
+
+    function startDrag(ev) {
+      ev.dataTransfer.setData("text", "leite");
+    }
+
+    function drop(ev, tipo) {
+      ev.preventDefault();
+      const etapa = etapaAtual[tipo];
+      const alvo = document.getElementById(`${tipo}_${["boca", "estomago", "intestino", "colon"][etapa]}`);
+
+      if (!alvo.classList.contains('filled')) {
+        alvo.classList.add('filled');
+        alvo.innerHTML += `<div class="texto">${textos[tipo][etapa]}</div>`;
+        etapaAtual[tipo]++;
+      }
+
+      // Reinsere o leite se não chegou ao fim
+      if (etapaAtual[tipo] < 4) {
+        const leite = document.getElementById("leite");
+        leite.style.display = "block";
+      } else {
+        alert(`Cenário "${tipo === 'com' ? 'com lactase' : 'sem lactase'}" finalizado!`);
+      }
+    }
+  </script>
+
+</body>
+</html>
